@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Do You Love Me? 💘</title>
+  <style>
+    /* ——— CSS same as पहले वाला ——— */
+    /* मैंने CSS में कोई बदलाव नहीं किया, सिर्फ JS एडिट किया है */
+    :root{
+      --bg1:#ffe8f1;
+      --bg2:#fff7fb;
+      --card:#ffffffdd;
+      --text:#2b2b2b;
+      --accent:#ff4d8d;
+      --accent-2:#7c4dff;
+      --yes:#22c55e;
+      --no:#ef4444;
+      --shadow:0 10px 30px rgba(0,0,0,.06);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 80% -20%, var(--bg1), transparent) ,
+                  radial-gradient(1200px 800px at -10% 120%, var(--bg2), transparent),
+                  #fff;
+      overflow:hidden;
+    }
+    .wrap{
+      position:relative;
+      height:100%;
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+    .card{
+      width:min(560px, 92vw);
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(6px);
+      padding:28px 24px 22px;
+      text-align:center;
+      position:relative;
+      overflow:visible;
+    }
+    h1{
+      font-size: clamp(24px, 5vw, 34px);
+      margin:8px 0 10px;
+      line-height:1.15;
+    }
+    .subtitle{
+      color:#666;
+      margin:0 0 22px;
+      font-size:clamp(14px, 3.2vw, 16px);
+    }
+    .buttons{
+      position:relative;
+      width:100%;
+      height:200px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+    }
+    button{
+      border:0;
+      padding:14px 20px;
+      border-radius:999px;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .08s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
+      box-shadow: 0 6px 18px rgba(0,0,0,.08);
+      user-select:none;
+      touch-action:manipulation;
+      font-size:clamp(15px, 3.6vw, 17px);
+    }
+    .btn-yes{
+      background:linear-gradient(135deg, var(--yes), #16a34a);
+      color:#fff;
+    }
+    .btn-yes:hover{ transform: translateY(-1px) scale(1.02); }
+    .btn-no{
+      background:linear-gradient(135deg, var(--no), #dc2626);
+      color:#fff;
+      position:absolute;
+      left:55%;
+      top:50%;
+      transform: translate(-50%,-50%);
+      min-width:84px;
+    }
+    .btn-no:active{ transform: translate(-50%,-50%) scale(.98); }
+    .hint{
+      margin-top:8px;
+      font-size:12px;
+      color:#888;
+    }
+    .msg{
+      margin-top:14px;
+      font-size:clamp(16px, 4vw, 18px);
+      font-weight:600;
+      color:var(--accent);
+      min-height:1.4em;
+    }
+    .corner{
+      position:absolute;
+      inset:auto 8px -8px auto;
+      font-size:22px;
+      opacity:.6;
+      pointer-events:none;
+      animation: bob 3s ease-in-out infinite;
+    }
+    .corner.left{ left:8px; right:auto; transform:scaleX(-1); }
+    @keyframes bob{
+      0%,100%{ transform: translateY(0) }
+      50%{ transform: translateY(-6px) }
+    }
+    .hearts-container{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:10;
+    }
+    .heart{
+      position:absolute;
+      font-size: 16px;
+      animation: fall linear forwards;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,.15));
+    }
+    @keyframes fall{
+      0%{ transform: translateY(-10vh) rotate(0deg); opacity:0 }
+      10%{ opacity:1 }
+      100%{ transform: translateY(110vh) rotate(360deg); opacity:.9 }
+    }
+    footer{
+      position:fixed;
+      bottom:10px;
+      left:0; right:0;
+      text-align:center;
+      font-size:12px;
+      color:#777;
+      pointer-events:none;
+    }
+    @media (max-width: 420px){
+      .buttons{ height:240px }
+      .btn-no{ min-width:74px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="card">
+      <div class="corner left">💖</div>
+      <div class="corner">💘</div>
+      <h1>Do you love me? 💞</h1>
+      <p class="subtitle">सच-सच बताओ… 😄</p>
+      <div class="buttons" id="play-area">
+        <button class="btn-yes" id="yesBtn">Yes 😍</button>
+        <button class="btn-no" id="noBtn">No 🙈</button>
+      </div>
+      <div class="msg" id="msg"></div>
+      <div class="hint" id="hint">Tip: “No” बटन थोड़ा शरारती है… पकड़ कर दिखाओ! 😜</div>
+    </div>
+  </div>
+
+  <div class="hearts-container" id="hearts"></div>
+
+  <footer>Made with ❤️</footer>
+
+  <script>
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const msg = document.getElementById('msg');
+    const playArea = document.getElementById('play-area');
+    const hearts = document.getElementById('hearts');
+    const hint = document.getElementById('hint');
+
+    let dodgeCount = 0;
+    let locked = false;
+
+    function moveNo(btn){
+      const areaRect = playArea.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+      const pad = 8;
+      const maxLeft = areaRect.width - btnRect.width - pad;
+      const maxTop  = areaRect.height - btnRect.height - pad;
+      let x = Math.random() * maxLeft + pad/2;
+      let y = Math.random() * maxTop  + pad/2;
+      const cx = areaRect.width / 2, cy = areaRect.height / 2;
+      const dx = x - cx, dy = y - cy;
+      const mag = Math.hypot(dx,dy) || 1;
+      x += (dx/mag) * 20;
+      y += (dy/mag) * 20;
+      x = Math.max(pad, Math.min(x, maxLeft));
+      y = Math.max(pad, Math.min(y, maxTop));
+      noBtn.style.left = x + 'px';
+      noBtn.style.top  = y + 'px';
+      noBtn.style.transform = 'translate(0,0)';
+    }
+
+    function playfulText(n){
+      const lines = [
+        "अरे पकड़ के दिखाओ! 😜",
+        "इतनी easily ‘No’ नहीं बोलने दूँगा 😏",
+        "हिम्मत है तो क्लिक करो! 🏃‍♂️💨",
+        "बस ‘Yes’ बोल दो ना… 🥺",
+        "मुझे पता है तुम Yes ही बोलोगे 😉",
+        "मान भी जाओ… 💖"
+      ];
+      return lines[Math.min(n, lines.length-1)];
+    }
+
+    function spawnHeart(){
+      const el = document.createElement('div');
+      el.className = 'heart';
+      el.textContent = ['💖','💘','💝','❤️','💕'][Math.floor(Math.random()*5)];
+      const startLeft = Math.random()*100;
+      const duration = 4 + Math.random()*3;
+      const size = 16 + Math.random()*22;
+      el.style.left = startLeft + 'vw';
+      el.style.top = '-5vh';
+      el.style.fontSize = size + 'px';
+      el.style.animationDuration = duration + 's';
+      hearts.appendChild(el);
+      setTimeout(()=> el.remove(), duration*1000 + 200);
+    }
+
+    function celebrate(){
+      for(let i=0;i<20;i++){
+        setTimeout(spawnHeart, i*60);
+      }
+      const rain = setInterval(spawnHeart, 200);
+      setTimeout(()=> clearInterval(rain), 4000);
+    }
+
+    ['mouseenter','touchstart'].forEach(evt=>{
+      noBtn.addEventListener(evt, e=>{
+        if(locked) return;
+        dodgeCount++;
+        moveNo(noBtn);
+        msg.textContent = playfulText(dodgeCount);
+      }, {passive:true});
+    });
+
+    document.addEventListener('mousemove', (e)=>{
+      if(locked) return;
+      const r = noBtn.getBoundingClientRect();
+      const distX = Math.max(0, Math.max(r.left - e.clientX, e.clientX - r.right));
+      const distY = Math.max(0, Math.max(r.top - e.clientY, e.clientY - r.bottom));
+      const dist = Math.hypot(distX, distY);
+      if(dist < 60){
+        dodgeCount++;
+        moveNo(noBtn);
+        msg.textContent = playfulText(dodgeCount);
+      }
+    });
+
+    yesBtn.addEventListener('click', ()=>{
+      if(locked) return;
+      locked = true;
+      msg.textContent = "मुझे पता था! I love you too 💗";
+      hint.textContent = "अब नो-नो नहीं, सिर्फ लव-लव! 😘";
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+      yesBtn.style.filter = 'saturate(1.1)';
+      celebrate();
+
+      // Instagram DM पर redirect (अपना username डालें)
+      window.location.href = "https://www.instagram.com/direct/t/your_insta_username/";
+    });
+
+    window.addEventListener('load', ()=>{
+      moveNo(noBtn);
+    });
+
+    yesBtn.setAttribute('aria-label','Yes, I love you');
+    noBtn.setAttribute('aria-label','No');
+  </script>
+</body>
+</html>
